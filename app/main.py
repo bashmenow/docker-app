@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, request
 import requests
-app = Flask(__name__)
+import redis
 
-from flask import request
+cache = redis.StrictRedis( host='redis', port=6379, db=0 )
+app = Flask(__name__)
 
 @app.route('/')
 def index():
@@ -11,8 +12,14 @@ def index():
 @app.route('/ip', methods=['GET'])
 def get_ip():
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    r = requests.get('http://resolver:8000/' + ip)
-    ptr = r.content
+    ptr = cache.get(ip)
+    if ptr is None:
+        print("miss cache get http request....")
+        r = requests.get('http://resolver:8000/' + ip)
+        ptr = r.content.decode('utf-8')
+        cache.set(ip, ptr)
+    else:
+        ptr = ptr.decode('utf-8')
     header = '<html><head><title>Resolver APP</title></head><body>'
     body =  f'''<p>Your ip address is:  {ip}
                 <p>PTR record is:  {ptr}'''

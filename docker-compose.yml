@@ -1,12 +1,17 @@
-dockerapp:
-  build .
+version: '3'
+services:
+ dockerapp:
+  build: .
   ports:
-    - "5000:5000"
+   - "5000:5000"
   environment:
-    ENV: DEV
+   - ENV=DEV
   volumes:
-    - ./app:/app
+   - "./app:/app"
   links:
    - resolver
-resolver:
-  image: bashmeunix/ptr:0.1
+   - redis
+ resolver:
+  image: "bashmeunix/ptr:0.1"
+ redis:
+  image: "redis:latest"
