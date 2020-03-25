@@ -14,7 +14,7 @@ def get_ip():
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ptr = cache.get(ip)
     if ptr is None:
-        print("miss cache get http request....")
+        print("miss cache get http request....", flush=True)
         r = requests.get('http://resolver:8000/' + ip)
         ptr = r.content.decode('utf-8')
         cache.set(ip, ptr)
