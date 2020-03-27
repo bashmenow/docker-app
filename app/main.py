@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Hello, custom docker!"
+    return "Main page resolver!"
 
 @app.route('/ip', methods=['GET'])
 def get_ip():
