@@ -6,9 +6,10 @@ services:
   ports:
    - "5000:5000"
   environment:
-   - ENV=DEV
+   - ENV=UNIT
   volumes:
    - "./app:/app"
+   - "./entry-point.sh:/entry-point.sh"
   links:
    - resolver
    - redis
