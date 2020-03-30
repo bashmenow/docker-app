@@ -1,0 +1,16 @@
+dockerapp:
+  container_name: app
+  build: .
+  expose:
+    - "9090"
+  environment:
+    ENV: PROD
+  links:
+    - resolver
+    - redis
+  resolver:
+    container_name: "resolver"
+    image: "bashmeunix/ptr:0.1"
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
