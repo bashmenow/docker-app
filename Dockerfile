@@ -10,6 +10,6 @@ RUN groupadd -r user \
         && pip install -r requirements.txt
 
 
-EXPOSE 9090 9191
+EXPOSE 9090
 USER user
 CMD ["/entry-point.sh"]

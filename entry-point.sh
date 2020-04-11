@@ -8,6 +8,5 @@ elif [ "$ENV" = 'UNIT' ]; then
  exec python "tests.py"
 elif [ "$ENV" = 'PROD' ]; then
  echo "Running Production Server"
- exec uwsgi --http 0.0.0.0:9090 --wsgi-file /app/main.py \
- --callable app --stats 0.0.0.0:9191
+ exec gunicorn --bind 0.0.0.0:9090 main.py:app
 fi
