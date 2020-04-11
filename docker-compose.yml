@@ -1,17 +1,22 @@
 version: '3'
 services:
  dockerapp:
+  container_name: "app"
   image: "bashmeunix/book:latest"
   ports:
-   - "5000:5000"
+    - "127.0.0.1:5000:5000"
+    - "127.0.0.1:9090:9090"
   environment:
-   - ENV=DEV
+   - ENV=PROD
   volumes:
    - "./app:/app"
+   - "./entry-point.sh:/entry-point.sh"
   links:
    - resolver
    - redis
  resolver:
+  container_name: "resolver"
   image: "bashmeunix/ptr:0.1"
  redis:
+  container_name: "redis"
   image: "redis:latest"

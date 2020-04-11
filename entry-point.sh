@@ -1,12 +1,13 @@
 #!/bin/bash
-
 set -e
-
 if [ "$ENV" = 'DEV' ]; then
-	echo "Running developer mode ....."
-	exec python "main.py"
-else
-	echo "Running production mode...."
-	exec uwsgi -http 0.0.0.0:9090 --wsgi-file /app/main.py \
-		--callable app --stats 0.0.0.0:9191
+ echo "Running Development Server"
+ exec python "main.py"
+elif [ "$ENV" = 'UNIT' ]; then
+ echo "Running Unit Tests"
+ exec python "tests.py"
+elif [ "$ENV" = 'PROD' ]; then
+ echo "Running Production Server"
+ exec uwsgi --http 0.0.0.0:9090 --wsgi-file /app/main.py \
+ --callable app --stats 0.0.0.0:9191
 fi
