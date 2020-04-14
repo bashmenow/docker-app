@@ -1,7 +1,20 @@
 version: '3'
 services:
+ proxy:
+  container_name: "proxy"
+  image: "nginx:1.17.9"
+  volumes:
+   - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
+  ports:
+   - "80:80"
+  links:
+   - dockerapp       
  dockerapp:
   container_name: "app"
+  image: "bashmeunix/book:latest"
+  ports:
+    - "127.0.0.1:5000:5000"
+    - "127.0.0.1:9090:9090"
   build: .
   ports:
    - "127.0.0.1:5000:5000"

@@ -8,5 +8,5 @@ elif [ "$ENV" = 'UNIT' ]; then
  exec python "tests.py"
 elif [ "$ENV" = 'PROD' ]; then
  echo "Running Production Server"
- exec gunicorn --bind 0.0.0.0:9090 main.py:app
+ exec gunicorn --bind 0.0.0.0:9090 main:app
 fi
