@@ -2,11 +2,14 @@ version: '3'
 services:
  proxy:
   container_name: "proxy"
-  image: "nginx:1.17.9"
+  build: proxy/
   volumes:
    - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
   ports:
    - "80:80"
+  environment:
+   - NGINX_HOST=app.isnogood.ru
+   - NGINX_PROXY=http://dockerapp:9090
   links:
    - dockerapp       
  dockerapp:
