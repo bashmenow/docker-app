@@ -1,16 +1,16 @@
-version: '3'
+version: '2.4'
 services:
  proxy:
   container_name: "proxy"
   build: proxy/
-  volumes:
-   - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
+  #  volumes:
+  # - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
   ports:
    - "80:80"
   environment:
    - NGINX_HOST=app.isnogood.ru
    - NGINX_PROXY=http://dockerapp:9090
-  links:
+  depends_on:
    - dockerapp       
  dockerapp:
   container_name: "app"
@@ -27,12 +27,29 @@ services:
   volumes:
    - "./app:/app"
    - "./entry-point.sh:/entry-point.sh"
-  links:
+  depends_on:
    - resolver
    - redis
  resolver:
   container_name: "resolver"
   image: "bashmeunix/ptr:0.1"
+  depends_on:
+    - redis
  redis:
   container_name: "redis"
   image: "redis:latest"
+ logspout:
+  image: gliderlabs/logspout
+  volumes:
+   - /var/run/docker.sock:/tmp/docker.sock
+  ports:
+   - "8000:80"
+  depends_on:
+    - logstash
+  command: logstash://logstash:5000
+ logstash:
+  image: logstash:6.8.8
+  volumes:
+   - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  environment:
+   LOGSPOUT: ignore
