@@ -39,17 +39,42 @@ services:
   container_name: "redis"
   image: "redis:latest"
  logspout:
-  image: gliderlabs/logspout
+  image: logspout:latest
   volumes:
-   - /var/run/docker.sock:/tmp/docker.sock
+   - /var/run/docker.sock:/var/run/docker.sock
   ports:
    - "8000:80"
   depends_on:
-    - logstash
+    logstash:
+     condition: service_healthy
+  restart: always
   command: logstash://logstash:5000
  logstash:
   image: logstash:6.8.8
   volumes:
-   - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+   - ./logstash.conf:/etc/logstash.conf
+  environment:
+   ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+   LOGSPOUT: ignore
+  healthcheck:
+   test: ["CMD", "curl", "http://localhost:9600/"]
+   interval: 3s
+   timeout: 3s
+   retries: 10
+   start_period: 60s
+  depends_on:
+    - elasticsearch
+  command: logstash -f /etc/logstash.conf
+ elasticsearch:
+   image: elasticsearch:6.8.8
+   environment:
+    LOGSPOUT: ignore
+ kibana:
+  image: kibana:6.8.8
   environment:
    LOGSPOUT: ignore
+   ELASTICSEARCH_URL: http://elasticsearch:9200
+  depends_on:
+   - elasticsearch
+  ports:
+   - "0.0.0.0:5601:5601"
