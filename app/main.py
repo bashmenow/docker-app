@@ -5,7 +5,7 @@ import redis
 cache = redis.StrictRedis( host='redis', port=6379, db=0 )
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/dns', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         header = '<html><head><title>Main APP</title></head><body>'
