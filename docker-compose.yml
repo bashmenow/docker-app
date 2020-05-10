@@ -2,26 +2,28 @@ version: '2.4'
 services:
  proxy:
   container_name: "proxy"
+  hostname: "proxy"
   build: proxy/
   #  volumes:
-  # - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
+          #   - "./proxy/nginx.conf:/etc/nginx/conf.d/default.conf"
   ports:
    - "127.0.0.1:8080:80"
   environment:
-   - NGINX_HOST=app.isnogood.ru
+   - NGINX_HOST=proxy.isnogood.ru
    - NGINX_PROXY=http://dockerapp:9090
   depends_on:
-   - dockerapp       
+   - dockerapp    
  dockerapp:
   container_name: "app"
+  hostname: "app"
   image: "bashmeunix/book:latest"
   ports:
     - "127.0.0.1:5000:5000"
-    - "127.0.0.1:9090:9090"
-  build: .
-  ports:
-   - "127.0.0.1:5000:5000"
-   - "127.0.0.1:9090:9090"
+    - "127.0.0.1:9095:9090"
+      #  build: .
+      # ports:
+      # - "127.0.0.1:5000:5000"
+      # - "127.0.0.1:9090:9090"
   environment:
    - ENV=PROD
   volumes:
@@ -32,14 +34,18 @@ services:
    - redis
  resolver:
   container_name: "resolver"
+  hostname: "resolver"
   image: "bashmeunix/ptr:0.1"
   depends_on:
     - redis
  redis:
   container_name: "redis"
+  hostname: redis
   image: "redis:latest"
  logspout:
-  image: logspout:latest
+  image: bashmeunix/logspout:0.1
+  container_name: "logspout"
+  hostname: "logspout"
   volumes:
    - /var/run/docker.sock:/var/run/docker.sock
   ports:
@@ -50,6 +56,8 @@ services:
   restart: always
   command: logstash://logstash:5000
  logstash:
+  container_name: "logstash"
+  hostname: "logstash"
   image: logstash:6.8.8
   volumes:
    - ./logstash.conf:/etc/logstash.conf
@@ -67,14 +75,19 @@ services:
   command: logstash -f /etc/logstash.conf
  elasticsearch:
    image: elasticsearch:6.8.8
+   container_name: "elasticsearch"
+   hostname: "elasticsearch"
    environment:
     LOGSPOUT: ignore
  kibana:
   image: kibana:6.8.8
+  container_name: "kibana"
+  hostname: "kibana"
   environment:
    LOGSPOUT: ignore
    ELASTICSEARCH_URL: http://elasticsearch:9200
+   server.basePath: "/kibana"
   depends_on:
    - elasticsearch
   ports:
-   - "0.0.0.0:5601:5601"
+   - "127.0.0.1:5601:5601"
